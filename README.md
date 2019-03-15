@@ -1,7 +1,7 @@
 cinnamon-applet-wireguard
 =========================
 
-A simple [WireGuard](https://www.wireguard.com) systray applet for [Cinnamon](https://en.wikipedia.org/wiki/Cinnamon_(software\)).
+A simple [WireGuard](https://www.wireguard.com) systray applet for [Cinnamon](https://en.wikipedia.org/wiki/Cinnamon_%28software%29).
 
 ![screenshot](screenshot.png)
 
