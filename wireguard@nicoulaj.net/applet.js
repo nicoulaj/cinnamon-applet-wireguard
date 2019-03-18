@@ -105,18 +105,15 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE | GLib.SpawnFlags.SEARCH_PATH
             );
 
-            let out;
+            let out, self = this;
 
             proc.get_stdout_pipe().read_bytes_async(1048576, 0, null, Lang.bind(proc, function (o, result) {
                 out = o.read_bytes_finish(result).get_data().toString();
             }));
 
             proc.wait_async(null, Lang.bind(proc, function (o, result) {
-                if (proc.get_exit_status()) {
-                    const msg = _("Failed toggling WireGuard interface") + ":\n" + out;
-                    global.logError(msg);
-                    new ModalDialog.NotifyDialog(msg).open();
-                }
+                if (proc.get_exit_status())
+                    self._handle_error(_("Failed toggling WireGuard interface"), out, false);
             }));
 
         } catch (e) {
@@ -180,8 +177,11 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
         this.set_applet_tooltip(_("WireGuard"));
     }
 
-    _handle_error(msg, e, fatal = true) {
-        const formatted = msg + "\n\n" + _("Errors details") + ":\n" + e;
+    _handle_error(msg, details = null, fatal = true) {
+        let formatted = msg;
+
+        if (details)
+            formatted += "\n\n" + _("Error details") + ":\n" + details;
 
         global.logError(formatted);
 
