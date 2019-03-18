@@ -45,8 +45,10 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
         this._menu = null;
         this._net_monitor = null;
         this._net_monitor_id = null;
+        this._net_interfaces = null;
         this._wg_monitor = null;
         this._wg_monitor_id = null;
+        this._wg_interfaces = null;
 
         this.set_applet_icon_symbolic_name("off");
         this.set_applet_tooltip(_("WireGuard"));
@@ -56,12 +58,12 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
 
         if (!this._net_monitor) {
             this._net_monitor = Gio.network_monitor_get_default();
-            this._net_monitor_id = this._net_monitor.connect('network-changed', (monitor, network_available, user_data) => this._refresh());
+            this._net_monitor_id = this._net_monitor.connect('network-changed', (monitor, network_available, user_data) => this._on_net_changed());
         }
 
         if (!this._wg_monitor) {
             this._wg_monitor = Gio.file_new_for_path("/etc/wireguard").monitor_directory(Gio.FileMonitorFlags.SEND_MOVED, null);
-            this._wg_monitor_id = this._wg_monitor.connect('changed', (type) => this._refresh());
+            this._wg_monitor_id = this._wg_monitor.connect('changed', (type) => this._on_wg_changed());
         }
 
         if (!this._menu_manager) {
@@ -69,6 +71,12 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
             this._menu = new Applet.AppletPopupMenu(this, this._orientation);
             this._menu_manager.addMenu(this._menu);
         }
+
+        if (!this._net_interfaces)
+            this._net_interfaces = this._get_net_interfaces();
+
+        if (!this._wg_interfaces)
+            this._wg_interfaces = this._get_wg_interfaces();
 
         this._refresh();
     }
@@ -89,6 +97,12 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
             this._menu = null;
             this._menu_manager = null;
         }
+
+        if (this._net_interfaces)
+            this._net_interfaces = null;
+
+        if (this._wg_interfaces)
+            this._wg_interfaces = null;
     }
 
     on_applet_clicked(event) {
@@ -121,6 +135,30 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
         }
     }
 
+    _on_net_changed() {
+
+        const net_interfaces = this._get_net_interfaces();
+        if (!net_interfaces)
+            return;
+
+        if (!WireGuardApplet._array_equals(this._net_interfaces, net_interfaces)) {
+            this._net_interfaces = net_interfaces;
+            this._refresh();
+        }
+    }
+
+    _on_wg_changed() {
+
+        const wg_interfaces = this._get_wg_interfaces();
+        if (!wg_interfaces)
+            return;
+
+        if (!WireGuardApplet._array_equals(this._wg_interfaces, wg_interfaces)) {
+            this._wg_interfaces = wg_interfaces;
+            this._refresh();
+        }
+    }
+
     _get_net_interfaces() {
         try {
             const interfaces = [];
@@ -146,14 +184,6 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
 
     _refresh() {
 
-        const net_ifaces = this._get_net_interfaces();
-        if (!net_ifaces)
-            return;
-
-        const wg_ifaces = this._get_wg_interfaces();
-        if (!wg_ifaces)
-            return;
-
         if (!this._menu)
             return;
 
@@ -161,10 +191,10 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
 
         let active_ifaces = 0;
 
-        for (let i = 0; i < wg_ifaces.length; i++) {
-            const iface = wg_ifaces[i];
+        for (let i = 0; i < this._wg_interfaces.length; i++) {
+            const iface = this._wg_interfaces[i];
 
-            const enabled = net_ifaces.includes(iface);
+            const enabled = this._net_interfaces.includes(iface);
             if (enabled)
                 active_ifaces++;
 
@@ -191,5 +221,9 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
             this.on_applet_removed_from_panel();
             this.set_applet_tooltip(msg);
         }
+    }
+
+    static _array_equals(arr1, arr2) {
+        return arr1.length == arr2.length && arr1.filter(e => arr2.includes(e)).length == arr1.length
     }
 };
