@@ -62,7 +62,12 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
         }
 
         if (!this._wg_monitor) {
-            this._wg_monitor = Gio.file_new_for_path("/etc/wireguard").monitor_directory(Gio.FileMonitorFlags.SEND_MOVED, null);
+            let wg_config_path = Gio.file_new_for_path("/etc/wireguard");
+            if (!wg_config_path.query_exists(null)) {
+                this._handle_error(_("WireGuard configs directory /etc/wireguard does not exist, please make sure WireGuard is installed"));
+                return;
+            }
+            this._wg_monitor = wg_config_path.monitor_directory(Gio.FileMonitorFlags.SEND_MOVED, null);
             this._wg_monitor_id = this._wg_monitor.connect('changed', (type) => this._on_wg_changed());
         }
 

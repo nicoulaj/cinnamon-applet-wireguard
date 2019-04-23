@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-16 00:05+0100\n"
+"POT-Creation-Date: 2019-04-23 19:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,31 +30,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. metadata.json->name
-#: applet.js:35 applet.js:163
+#: applet.js:54 applet.js:212
 msgid "WireGuard"
 msgstr ""
 
-#: applet.js:99
+#: applet.js:67
+msgid ""
+"WireGuard configs directory /etc/wireguard does not exist, please make sure "
+"WireGuard is installed"
+msgstr ""
+
+#: applet.js:135
 msgid "Failed toggling WireGuard interface"
 msgstr ""
 
-#: applet.js:106
+#: applet.js:139
 msgid ""
 "Failed calling wg-quick, please make sure it is installed and accessible"
 msgstr ""
 
-#: applet.js:117
+#: applet.js:174
 msgid "Failed reading network interfaces"
 msgstr ""
 
-#: applet.js:129
+#: applet.js:186
 msgid ""
 "Failed accessing WireGuard configs directory, please make sure it is accessible\n"
 "sudo chmod o+r /etc/wireguard"
 msgstr ""
 
-#: applet.js:167
-msgid "Errors details"
+#: applet.js:219
+msgid "Error details"
 msgstr ""
 
 #. metadata.json->description
