@@ -120,7 +120,7 @@ const WireGuardApplet = class WireGuardApplet extends Applet.IconApplet {
 
         try {
             const proc = Gio.Subprocess.new(
-                ['wg-quick', enable ? 'up' : 'down', iface],
+                ['sudo', '--askpass', 'wg-quick', enable ? 'up' : 'down', iface],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE | GLib.SpawnFlags.SEARCH_PATH
             );
 
